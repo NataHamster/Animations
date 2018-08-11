@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html>
+	<head runat="server">
+		<title></title>
+	    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/91/three.js" type="text/javascript"></script>
+		<script src="assets/js/FirstPersonControls.js" type="text/javascript"></script>
+		<script src="assets/js/jquery.js" type="text/javascript"></script>
+		
+		<style>
+			 body{
+				margin: 0px;
+				overflow: hidden;
+			 }	
+		</style>
+	</head>
+	<body>
+	<div style="position: absolute;">
+		<button class="buttons" style="display:inline" data-name="followMercury">Mercury</button>
+		<button class="buttons" style="display:inline" data-name="followVenus">Venus</button>
+		<button class="buttons" style="display:inline" data-name="followEarth">Earth</button>
+		<button class="buttons" style="display:inline" data-name="followMars">Mars</button>
+		<button class="buttons" style="display:inline" data-name="followJupiter">Jupiter</button>
+		<button class="buttons" style="display:inline" data-name="followSaturn">Saturn</button>
+		<button class="buttons" style="display:inline" data-name="followUranus">Uranus</button>
+		<button class="buttons" style="display:inline" data-name="followNeptune">Neptune</button>
+    </div>	
+	    <script type="text/javascript">
+			var camera, scene, renderer;
+			var sun_geom, sun_mat, sun;
+			var mercury_geom, mercury_mat, mercury; 
+			var venus_geom, venus_mat, venus; 
+			var earth_geom, earth_mat, earth;
+			var mars_geom, mars_mat, mars; 
+			var jupiter_geom, jupiter_mat, jupiter; 
+			var saturn_geom, saturn_mat, saturn; 
+			var ring_sarurn_geom, ring_saturn_mat, ring;
+			var uranus_geom, uranus_mat, uranus; 
+			var neptune_geom, neptune_mat, neptune; 
+			var t = 0;
+			var offset_y = 0;
+			var texture;
+			var r = 0.019;
+			var light;
+			var controls;
+			var data = {
+				followMercury: false, 
+				followVenus: false,
+				followEarth: false, 
+				followMars: false,				
+				followJupiter: false,
+				followSaturn: false,
+				followUranus: false, 
+				followNeptune: false
+			};
+			//console.log(data);
+			 
+			 
+			$('.buttons').click(function() {
+			    for (var key in data) {
+					data[key] = false;
+			    }
+			    data[this.dataset.name] = true;
+			    console.log(data);
+			});
+			 
+			init();
+			animate();
+
+			function init() {
+				camera = new THREE.PerspectiveCamera( 40, window.innerWidth / window.innerHeight, 0.01, 10000 );
+				camera.position.z = 1;
+				camera.rotation.z = -Math.PI/20;
+
+				scene = new THREE.Scene();
+				/*controls = new THREE.FirstPersonControls(camera);
+				controls.movementSpeed = 200;
+				controls.lookSpeed = 0.1;*/
+				
+				light = new THREE.PointLight(0xffffff, 1.4, 7000);
+				light.position.set(0, 0, 0);
+				light.castShadow = true;
+				light.shadowMapWidth = 2048;
+				light.shadowMapHeight = 2048;
+				scene.add(light);
+				
+				starsGeometry = new THREE.Geometry();
+				for ( var i = 0; i < 35000; i ++ ){
+				   var star = new THREE.Vector3();
+				   star.x = THREE.Math.randFloatSpread( 2000 );
+				   star.y = THREE.Math.randFloatSpread( 2000 );
+				   star.z = THREE.Math.randFloatSpread( 2000 );
+				   //star.multiplyScalar(0.1);	 
+				   starsGeometry.vertices.push(star);
+			    }   
+				starsMaterial = new THREE.PointsMaterial({ color: 0xbbbbbb, opacity: 0.6, size:1, sizeAttenuation: false }); 		
+				stars = new THREE.Points(starsGeometry, starsMaterial);
+				//stars.scale.set(0.2, 0.2, 0.2);
+				scene.add(stars);
+				
+				starsGeometry2 = new THREE.Geometry();
+				for ( var i = 0; i < 15000; i ++ ){
+				   var star = new THREE.Vector3();
+				   star.x = THREE.Math.randFloatSpread( 2000 );
+				   star.y = THREE.Math.randFloatSpread( 2000 );
+				   star.z = THREE.Math.randFloatSpread( 2000 );
+				   //star.multiplyScalar(0.1);	 
+				   starsGeometry2.vertices.push(star);
+			    }   
+				starsMaterial2 = new THREE.PointsMaterial({ color: 0xbbbbbb, opacity: 1, size:2, sizeAttenuation: false }); 		
+				stars2 = new THREE.Points(starsGeometry2, starsMaterial2);
+				//stars.scale.set(0.2, 0.2, 0.2);
+				scene.add(stars2);
+
+				sun_geom = new THREE.SphereGeometry(0.12, 40, 40);
+				texture = new THREE.TextureLoader().load( 'assets/images/sun.jpg' );
+				texture.anisotropy = 8;	
+				//sun_mat = new THREE.MeshPhongMaterial({ map: texture, emissive: 0xffffff });
+				sun_mat = new THREE.MeshBasicMaterial({map: texture});
+				sun = new THREE.Mesh(sun_geom, sun_mat);	
+				scene.add(sun);
+				
+				mercury_geom = new THREE.SphereGeometry(0.3829 *r, 20, 20);
+				texture5 = new THREE.TextureLoader().load( 'assets/images/mercury.jpg' )
+				mercury_mat = new THREE.MeshLambertMaterial({map: texture5});
+				mercury = new THREE.Mesh(mercury_geom, mercury_mat);
+				scene.add(mercury);
+				
+				venus_geom = new THREE.SphereGeometry(0.95*r, 20, 20);
+				texture4 = new THREE.TextureLoader().load( 'assets/images/venus.jpg' )
+				venus_mat = new THREE.MeshLambertMaterial({map: texture4});
+				venus = new THREE.Mesh(venus_geom, venus_mat);
+				scene.add(venus);
+				
+				earth_geom = new THREE.SphereGeometry(r, 20, 20);
+				texture2 = new THREE.TextureLoader().load( 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/Whole_world_-_land_and_oceans_12000.jpg/500px-Whole_world_-_land_and_oceans_12000.jpg' );
+				earth_mat = new THREE.MeshLambertMaterial({map: texture2});
+				//earth_mat = new THREE.MeshNormalMaterial();
+				earth = new THREE.Mesh(earth_geom, earth_mat);
+				//earth.position.x = 0.4;	
+				scene.add(earth);
+				
+				mars_geom = new THREE.SphereGeometry(0.532*r, 20, 20);
+				texture3 = new THREE.TextureLoader().load( 'assets/images/mars.jpg' );
+				mars_mat = new THREE.MeshLambertMaterial({map: texture3});
+				//earth_mat = new THREE.MeshNormalMaterial();
+				mars = new THREE.Mesh(mars_geom, mars_mat);
+				//earth.position.x = 0.4;	
+				scene.add(mars);
+				
+				jupiter_geom = new THREE.SphereGeometry(2*r, 30, 30);
+				texture6 = new THREE.TextureLoader().load( 'assets/images/jupiter.jpg' )
+				jupiter_mat = new THREE.MeshLambertMaterial({map: texture6});
+				jupiter = new THREE.Mesh(jupiter_geom, jupiter_mat);
+				jupiter.castShadow = true;
+				scene.add(jupiter);
+				
+				saturn_geom = new THREE.SphereGeometry(1.5*r, 30, 30);
+				texture7 = new THREE.TextureLoader().load( 'assets/images/saturn.jpg' )
+				saturn_mat = new THREE.MeshLambertMaterial({map: texture7});
+				saturn = new THREE.Mesh(saturn_geom, saturn_mat);
+				saturn.castShadow = true;
+				scene.add(saturn);
+				
+				ring_sarurn_geom = new THREE.Geometry();
+				ring_sarurn_mat = new THREE.PointsMaterial({ color: 0x3A3A3A, opacity: 0.3, size:1, sizeAttenuation: false });
+				for ( var i = 0; i < 20000; i ++ ){
+				   var vertex = new THREE.Vector3();
+				   vertex.x = Math.sin( Math.PI/180*i )*(4*r-i/2);
+				   vertex.y = THREE.Math.randFloatSpread(4)*10;
+				   vertex.z = Math.cos( Math.PI/180*i )*(4*r-i/2);				   	 
+				   ring_sarurn_geom.vertices.push(vertex.multiplyScalar(0.000005));
+			    }  
+				
+				ring = new THREE.Points(ring_sarurn_geom, ring_sarurn_mat);
+				ring.castShadow = true;
+				scene.add(ring);
+				
+				uranus_geom = new THREE.SphereGeometry(1.1*r, 30, 30);
+				texture8 = new THREE.TextureLoader().load( 'assets/images/uranus.jpg' )
+				uranus_mat = new THREE.MeshLambertMaterial({map: texture8});
+				uranus = new THREE.Mesh(uranus_geom, uranus_mat);
+				scene.add(uranus);
+				
+				neptune_geom = new THREE.SphereGeometry(1.1*r, 30, 30);
+				texture9 = new THREE.TextureLoader().load( 'assets/images/neptune.jpg' )
+				neptune_mat = new THREE.MeshLambertMaterial({map: texture9});
+				neptune = new THREE.Mesh(neptune_geom, neptune_mat);
+				//neptune.castShadow = true;
+				scene.add(neptune);				
+
+				renderer = new THREE.WebGLRenderer( { antialias: true } );
+				renderer.setSize( window.innerWidth, window.innerHeight );
+				document.body.appendChild( renderer.domElement );
+				/*document.addEventListener('mousemove', function(e){
+					offset_y = parseInt(e.offsetY);
+				});*/
+			}			
+			
+			function animate() {
+				requestAnimationFrame( animate );//
+				//controls.update(0.01);
+				sun.rotation.y+=0.01;//
+				mercury.rotation.y+=0.01;//
+				venus.rotation.y+=0.01;//
+				earth.rotation.y+=0.01;//
+				mars.rotation.y+=0.01; //
+				jupiter.rotation.y+=0.01; //
+				saturn.rotation.y+=0.01;//
+				uranus.rotation.y+=0.01;//
+				neptune.rotation.y+=0.01;//
+				
+				mercury.position.x = Math.sin(t*0.35)*0.14;//
+				mercury.position.z = Math.cos(t*0.35)*0.14;//
+				
+				venus.position.x = Math.sin(t*0.3)*0.18;//
+				venus.position.z = Math.cos(t*0.3)*0.18;//
+				
+				earth.position.x = Math.sin(t*0.25)*0.25;//
+				earth.position.z = Math.cos(t*0.25)*0.25;//
+				//camera.position.y = 0.001*offset_y;
+				
+				mars.position.x = Math.sin(t*0.2)*0.3;//
+				mars.position.z = Math.cos(t*0.2)*0.3; //
+				
+				jupiter.position.x = Math.sin(t*0.1)*0.4;//
+				jupiter.position.z = Math.cos(t*0.1)*0.4;//
+				
+				saturn.position.x = Math.sin(t*0.05)*0.45;//
+				saturn.position.z = Math.cos(t*0.05)*0.45;//
+				
+				ring.position.x = saturn.position.x;
+				ring.position.z = saturn.position.z;
+				
+				
+				uranus.position.x = Math.sin(t*0.04)*0.5;
+				uranus.position.z = Math.cos(t*0.04)*0.5;
+				
+				/*uranus.position.x = saturn.position.x;
+				uranus.position.z = saturn.position.z;*/
+				
+				neptune.position.x = Math.sin(t*0.03)*0.55;
+				neptune.position.z = Math.cos(t*0.03)*0.55;
+								
+				//camera.lookAt(earth.position); //камера слеюует за Землей
+				/*camera.position.x = earth.position.x;
+				camera.position.z = earth.position.z;*/
+				//camera.lookAt(sun.position);
+				
+				if (data.followMercury) { 
+					camera.position.x = mercury.position.x;
+					camera.position.z = mercury.position.z;
+				}
+				
+				if (data.followVenus) { 
+					camera.position.x = venus.position.x;
+					camera.position.z = venus.position.z;
+				}
+				
+				if (data.followEarth) { 
+					camera.position.x = earth.position.x;
+					camera.position.z = earth.position.z;
+				}
+				
+				if (data.followMars) { 
+					camera.position.x = mars.position.x;
+					camera.position.z = mars.position.z;
+				}
+				
+				if (data.followJupiter) { 
+					camera.position.x = jupiter.position.x;
+					camera.position.z = jupiter.position.z;
+				}
+				
+				if (data.followSaturn) { 
+					camera.position.x = saturn.position.x;
+					camera.position.z = saturn.position.z;
+				}
+				
+				if (data.followUranus) { 
+					camera.position.x = uranus.position.x;
+					camera.position.z = uranus.position.z;
+				}
+				
+				if (data.followNeptune) { 
+					camera.position.x = neptune.position.x;
+					camera.position.z = neptune.position.z;
+				}
+				
+				t+=Math.PI/180*2;			
+				renderer.render( scene, camera );
+			}			
+		</script>		
+	</body>
+</html>

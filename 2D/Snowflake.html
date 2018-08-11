@@ -1,0 +1,322 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Winter</title>
+		<script src="http://code.jquery.com/jquery-3.3.1.js"></script>
+		<style>
+		    #drawingCanvas {
+				left: 15vw; 
+				top: 5vh
+		    }
+		   
+		    #CanvasContainer {
+				margin-left: 15vw; 
+				margin-top: 5vh
+		    }
+		   
+		</style>
+		<script>
+			const TIMEOUT = 40;
+			var canvas, context,
+			lines = Array(),
+			lines1 = Array(),
+			stTime = 0,
+			r = 180,
+			g = 189,
+			b = 211;
+			window.onload = main;
+			
+			function main() {
+			  init();
+			  animate();
+			  changeColor(); 
+			}
+			
+			canvas.addEventListener("mousemove", function(e) {
+				pos_x = e.clientX,
+				pos_y = e.clientY
+	        });
+
+			function init() {
+			    canvas = document.getElementById("drawingCanvas");
+			    context = canvas.getContext("2d");
+			  
+			    lines[0] = new LineObject(290, 150, 50);
+			    lines[1] = new LineObject(600, 550, 15);
+			    lines[2] = new LineObject(480, 370, 35);
+			    lines[3] = new LineObject(150, 280, 25);
+			    lines[4] = new LineObject(300, 200, 20);
+			    lines[5] = new LineObject(100, 65, 10);
+				lines1[0] = new LineObject1(800, 400, 45);
+				lines1[1] = new LineObject1(55, 289, 50);
+				lines1[2] = new LineObject1(620, 450, 55);
+				lines1[3] = new LineObject1(580, 110, 40);
+				lines1[4] = new LineObject1(280, 250, 25);
+				lines1[5] = new LineObject1(80, 540, 18);		
+				
+			}			 
+
+			function animate(time) {
+				if (time - stTime >= TIMEOUT) {
+					context.clearRect(0, 0, canvas.width, canvas.height);
+					for (let i = 0; i < lines.length; i++) {
+					    if (lines[i].pos_y - lines[i].size > canvas.height)
+						    lines[i].pos_y = -lines[i].size;
+					    else
+						    lines[i].pos_y += lines[i].speed; 
+					    	lines[i].draw();
+					}
+					
+					for (let i = 0; i < lines1.length; i++) {
+					    if (lines1[i].pos_y - lines1[i].size > canvas.height)
+							lines1[i].pos_y = -lines1[i].size;
+					    else
+							lines1[i].pos_y += lines1[i].speed; 
+					 		lines1[i].draw();
+					}
+					stTime = time; 
+				}
+				requestAnimationFrame(animate);  
+			}			
+
+			function changeColor() {
+			    if (r === 180 && g === 189 && b === 211) {
+					r = 251;
+					g = 253;
+					b = 217;
+			    } else {
+					r = 180;
+					g = 189;
+					b = 211;
+			    }
+			    setTimeout(changeColor, 300);
+			}
+
+			function LineObject(pos_x, pos_y, size) {
+			
+				  context.lineWidth = 3;
+				  this.pos_x = pos_x;
+				  this.pos_y = pos_y;
+				  this.width = 4;
+				  this.size = size;
+				  this.speed = 2;
+				  this.addheight = Math.sin(Math.PI / 4) * (this.size / 2);
+			
+
+				  this.draw = function() {    
+					const drawLine = () => {
+					  context.beginPath();
+					  context.moveTo(x1, y1);
+					  context.lineTo(x2, y2);
+					  context.stroke();
+					}; 
+					const s1  = this.size * 0.098,  
+						  s14 = this.size * 0.14,   
+						  s31 = this.size * 0.314,  
+						  s22 = this.size * 0.22,   
+						  s50 = this.size * 0.50;
+					let x1, y1, x2, y2, buf;
+					context.strokeStyle = `rgb(${r}, ${g}, ${b}`;
+					
+					x1 = x2 = this.pos_x; 
+					y2 = this.pos_y; y1 = y2 + this.size; 
+					drawLine(); 
+					x1 += s50; x2 -= s50;
+					y1 = y2 = this.pos_y + s50;
+					drawLine(); 
+					x1 = this.pos_x - this.addheight; x2 = this.pos_x + this.addheight; 
+					buf = this.pos_y + s50; 
+					y1 = buf - this.addheight; y2 = buf + this.addheight; 
+					drawLine(); 
+					buf = x1; x1 = x2; x2 = buf; 
+					drawLine(); 
+					
+					x1 = x2 = this.pos_x - s22;
+					y1 = this.pos_y + s14; y2 = y1 + s14; 
+					drawLine(); 
+					y2 = this.pos_y + s50 + s22; y1 = y2 + s14; 
+					drawLine(); 
+					x2 = this.pos_x - s22; x1 = x2 - s14; 
+					y1 = y2 = this.pos_y + s14 * 2;
+					drawLine(); 
+					x1 = x2 = this.pos_x + s22;
+					y1 = this.pos_y + s14; y2 = y1 + s14; 
+					drawLine(); 
+					x2 = this.pos_x + s22; x1 = x2 + s14; 
+					y1 = y2; 
+					drawLine(); 
+					x1 = this.pos_x - s22; x2 = x1 - s14;
+					y1 = y2 = this.pos_y + s50 + s22;
+					drawLine(); 
+					x1 = x2 = this.pos_x + s22; y2 += s14;
+					drawLine(); 
+					x1 = this.pos_x + s22; x2 = x1 + s14;
+					y1 = y2 = this.pos_y + s50 + s22;
+					drawLine(); 
+					x2 = this.pos_x, x1 = x2 - s1;
+					y1 = this.pos_y + s1; y2 = y1 + s1;
+					drawLine(); 
+					x1 = x2 + s1; 
+					y1 = this.pos_y + s1; y2 = y1 + s1;
+					drawLine(); 
+					x1 = x2 - s1;
+					y2 = this.pos_y + s50 + s31; y1 = y2 + s1;
+					drawLine(); 
+					x1 = x2 + s1; 
+					drawLine();
+					x1 = x2 - s31; x2 = x1 - s1;
+					y1 = this.pos_y + s50; y2 = y1 - s1;
+					drawLine(); 
+					y2 = y1 + s1;
+					drawLine(); 
+					x1 = this.pos_x + s31; x2 = x1 + s1;
+					drawLine();
+					y2 = y1 - s1;
+					drawLine(); 
+			  }
+			}
+
+            function LineObject1(pos_x, pos_y, size) {
+				    context.lineWidth = 2;
+				    this.pos_x = pos_x;
+				    this.pos_y = pos_y;
+				    this.width = 5;
+				    this.size = size;
+				    this.speed = 3;
+				    this.addheight = Math.sin(Math.PI / 4) * (this.size / 2);
+				    this.centerX;
+					this.centerY;
+					this.radius = this.size/7;
+					this.startingAngle;
+				    this.endingAngle;
+					
+				
+
+				  this.draw = function() {   
+					const drawLine = () => {
+					  context.beginPath();
+					  context.moveTo(x1, y1);
+					  context.lineTo(x2, y2);
+					  context.stroke();
+					};
+					const drawArc = () => {
+					    context.beginPath(); 
+						context.arc(this.centerX, this.centerY, this.radius, this.startingAngle, this.endingAngle);
+						context.stroke();
+					};
+					const s1  = this.size * 0.098,  
+						  s14 = this.size * 0.14,   
+						  s31 = this.size * 0.314,  
+						  s22 = this.size * 0.22,  
+						  s50 = this.size * 0.50;
+					let x1, y1, x2, y2, buf;
+					context.strokeStyle = `rgb(${r}, ${g}, ${b}`;
+					
+					x1 = x2 = this.pos_x; 
+					y2 = this.pos_y; y1 = y2 + this.size; 
+					drawLine(); 
+					this.centerX = this.pos_x + this.radius;
+					this.centerY = y2 + this.size/2 - this.radius*2;
+					this.startingAngle = 2.5 * Math.PI;
+				    this.endingAngle = 1 * Math.PI;
+					drawArc();//1
+					this.centerX = this.pos_x + this.radius*2;
+					this.centerY = y2 + this.size/2 - this.radius;
+					this.startingAngle = 2.5 * Math.PI;
+				    this.endingAngle = 1 * Math.PI;
+					drawArc();//1_1
+					this.centerX = this.pos_x - this.radius;
+					this.centerY = y2 + this.size/2 - this.radius*2;
+					this.startingAngle = 2 * Math.PI;
+				    this.endingAngle = 2.5 * Math.PI;
+					drawArc();//2
+					this.centerX = this.pos_x - this.radius*2;
+					this.centerY = y2 + this.size/2 - this.radius;
+					this.startingAngle = 2 * Math.PI;
+				    this.endingAngle = 2.5 * Math.PI;
+					drawArc();//2_1
+					
+					this.centerX = this.pos_x + this.radius;
+					this.centerY = y2 + this.size/2 + this.radius*2;
+					this.startingAngle = 1 * Math.PI;
+				    this.endingAngle = 1.5 * Math.PI;
+					drawArc();//3
+					this.centerX = this.pos_x + this.radius*2;
+					this.centerY = y2 + this.size/2 + this.radius;
+					this.startingAngle = 1 * Math.PI;
+				    this.endingAngle = 1.5 * Math.PI;
+					drawArc();//3_1
+					this.centerX = this.pos_x - this.radius*2;
+					this.centerY = y2 + this.size/2 + this.radius;
+					this.startingAngle = 1.5 * Math.PI;
+				    this.endingAngle = 2 * Math.PI;
+					drawArc();//4
+					this.centerX = this.pos_x - this.radius;
+					this.centerY = y2 + this.size/2 + this.radius*2;
+					this.startingAngle = 1.5 * Math.PI;
+				    this.endingAngle = 2 * Math.PI;
+					drawArc();//4_1
+					x1 += s50; x2 -= s50;
+					y1 = y2 = this.pos_y + s50;
+					drawLine(); 
+					x1 = this.pos_x - this.addheight; x2 = this.pos_x + this.addheight; 
+					buf = this.pos_y + s50; 
+					y1 = buf - this.addheight; y2 = buf + this.addheight; 
+					drawLine(); 
+					buf = x1; x1 = x2; x2 = buf; 
+					drawLine(); 
+					
+					x1 = x2 = this.pos_x - s22;
+					y1 = this.pos_y + s14; y2 = y1 + s14; 
+					drawLine(); 
+					y2 = this.pos_y + s50 + s22; y1 = y2 + s14; 
+					drawLine(); 
+					x2 = this.pos_x - s22; x1 = x2 - s14; 
+					y1 = y2 = this.pos_y + s14 * 2;
+					drawLine(); 
+					x1 = x2 = this.pos_x + s22;
+					y1 = this.pos_y + s14; y2 = y1 + s14; 
+					drawLine(); 
+					x2 = this.pos_x + s22; x1 = x2 + s14; 
+					y1 = y2; 
+					drawLine(); 
+					x1 = this.pos_x - s22; x2 = x1 - s14;
+					y1 = y2 = this.pos_y + s50 + s22;
+					drawLine(); 
+					x1 = x2 = this.pos_x + s22; y2 += s14;
+					drawLine(); 
+					x1 = this.pos_x + s22; x2 = x1 + s14;
+					y1 = y2 = this.pos_y + s50 + s22;
+					drawLine(); 
+					x2 = this.pos_x, x1 = x2 - s1;
+					y1 = this.pos_y + s1; y2 = y1 + s1;
+					drawLine(); 
+					x1 = x2 + s1; 
+					y1 = this.pos_y + s1; y2 = y1 + s1;
+					drawLine(); 
+					x1 = x2 - s1;
+					y2 = this.pos_y + s50 + s31; y1 = y2 + s1;
+					drawLine(); 
+					x1 = x2 + s1; 
+					drawLine();
+					x1 = x2 - s31; x2 = x1 - s1;
+					y1 = this.pos_y + s50; y2 = y1 - s1;
+					drawLine(); 
+					y2 = y1 + s1;
+					drawLine(); 
+					x1 = this.pos_x + s31; x2 = x1 + s1;
+					drawLine();
+					y2 = y1 - s1;
+					drawLine(); 
+			  }   			 
+			}		
+		</script>
+	</head>
+	<body>
+	<div id="CanvasContainer">
+	   <img id="pic" src="assets/img/winter.png" width="900">
+	   <canvas id="drawingCanvas" width="900" height="580" style="position:absolute; margin-left: 8px;"></canvas>
+	</div>
+	</body>
+</html>

@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+	<head>
+	  <meta charset="utf-8">
+	  <meta name="viewport" content="width=device-width">
+	  <title>Space</title>
+	  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+	  <style>
+			#drawingCanvas {
+				height: 96vh;
+				width: 98vw;
+				background-color: #000; 
+			}		
+			
+			.meteor {
+				position: absolute;
+				top: 50px;
+				left: 280px;
+				width: 300px;
+				height: 1px;
+				background-image: -webkit-linear-gradient(left, white, rgba(255,255,255,0));
+			}
+
+			.meteor:before {
+				content: ' ';
+				position: absolute;
+				width: 5px;
+				height: 5px;
+				background-color: white;
+				border-radius: 50%;
+				box-shadow: 0 0 15px 5px white;
+				margin-top: -2px;
+			}
+
+			.meteor:nth-child(1) {transform: rotate(-60deg); top: 100px; left: 480px; animation: meteor1 10s ease infinite;}
+			.meteor:nth-child(2) {transform: rotate(-45deg); top: 200px; left: 280px; animation: meteor2 10s linear infinite;}
+			.meteor:nth-child(3) {transform: rotate(-80deg); top: 250px; left: 590px; animation: meteor3 13s linear infinite;}
+			.meteor:nth-child(4) {transform: rotate(-20deg); top: 500px; left: 600px; animation: meteor4 9s linear infinite;}
+
+			/*@-webkit-keyframes meteor {
+				0% {margin-top: -300px; margin-right: -300px; opacity: 1}
+				8% {opacity: 0}
+				10% {margin-top: 300px; margin-left: -600px; opacity: 0}
+				100% {opacity: 0}
+			}*/
+
+			@-webkit-keyframes meteor1 {
+				0% {margin-top: -300px; margin-right: -300px; opacity: 1}
+				8% {opacity: 0.7}
+				10% {margin-top: 400px; margin-left: -500px; opacity: 0}
+				100% {opacity: 0}
+			}
+
+			@-webkit-keyframes meteor2 {
+				0% {margin-top: -300px; margin-right: -300px; opacity: 1}
+				8% {opacity: 1}
+				10% {margin-top: 300px; margin-left: -600px; opacity: 0}
+				100% {opacity: 0}
+			}
+
+			@-webkit-keyframes meteor3 {
+				0% {margin-top: -300px; margin-right: -300px; opacity: 1}
+				8% {opacity: 1}
+				10% {margin-top: 200px; margin-left: -50px; opacity: 0}
+				100% {opacity: 0}
+			}
+
+			@-webkit-keyframes meteor4 {
+				0% {margin-top: -300px; margin-right: -300px; opacity: 1}
+				8% {opacity: 0.7}
+				10% {margin-top: 100px; margin-left: -900px; opacity: 0}
+				100% {opacity: 0}
+			}	
+		</style>
+		<script src = "html2canvas.js"></script>
+	</head>
+	<body>
+	  <canvas id="drawingCanvas"></canvas>
+	  <img id = "moon" src="assets/img/moon.png" width="100" style="">
+		<div class="meteors">
+			<div class="meteor" ></div>
+			<div class="meteor" ></div>
+			<div class="meteor" ></div>
+			<div class="meteor" ></div>	
+		</div>
+		<script>
+			var imgObj = null;
+			var animate ;
+			function init(){
+				imgObj = document.getElementById('moon');
+				imgObj.style.position= 'absolute'; 
+				imgObj.style.left = '10px'; 
+				imgObj.style.top = '50px'; 
+			}
+			
+			function moon() {
+				imgObj.style.left = parseInt(imgObj.style.left) + 1 + 'px';				
+				animate = setTimeout(moon, 400);
+			}
+			
+			function main()	{   
+				init();
+				moon() 
+			}
+
+			window.onload = main;
+		</script>
+		<script>
+			const ST_COUNT = 1000;
+			const WIND = 0.7;
+			var r = 255;
+			var g = 255;
+			var b = 200;
+
+			var canvas = document.getElementById("drawingCanvas"),
+				context = canvas.getContext("2d"), 		
+				sfArr = []; 	
+
+			context.lineWidth = 1;  
+
+			for(let i = 0; i < ST_COUNT; i++) {
+			  sfArr.push({
+				x: randomInt(0, canvas.width),
+				y: randomInt(0, canvas.height),
+				op: Math.random(),
+				delta_opacity: 0.1
+			  });
+			}
+
+			let intrvl = setInterval(() => {
+				context.clearRect(0, 0, canvas.width, canvas.height);
+				for (let i = 0; i < ST_COUNT; i++) {			
+					if (sfArr[i].op < 0.1 || sfArr[i].op > 0.9) {
+					    sfArr[i].delta_opacity = -sfArr[i].delta_opacity;	  
+					}
+					sfArr[i].op += sfArr[i].delta_opacity;				
+					context.strokeStyle = 'rgba(' + r + ',' + g + ',' + b + ', ' + sfArr[i].op + ')';
+					star(sfArr[i].x, sfArr[i].y, sfArr[i].op);		
+				}
+			}, 200);
+
+			function randomInt(min, max) {
+				return Math.floor(Math.random() * (max - min)) + min;
+			}
+
+			function star(squarePosition_x, squarePosition_y){
+				context.beginPath();
+				context.moveTo(squarePosition_x, squarePosition_y);
+				context.lineTo(squarePosition_x + 0.5*context.lineWidth, squarePosition_y + 0.5*context.lineWidth);
+				context.stroke(); 
+			}
+		</script>
+	</body>
+</html>

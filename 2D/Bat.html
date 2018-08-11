@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width">
+		<title>Bat</title>
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+		<style>
+			body{
+				background-color: #000; 
+		    }	
+			
+			.bat {
+				position:absolute; 
+				left: 46vw; 
+				top: 50vh; 
+			}
+		</style>
+		<script src = "assets/js/html2canvas.js"></script>
+	</head>
+	<body>
+	   	<img id = "moon" src="assets/img/moon.png" width="350" style="position:absolute; left: 35vw; top: 30vh">
+		<div id="rotator" >
+			<ul id="decrease">
+				<li class="show"><img class="bat" id ="bat1" src="assets/img/bat1.png" width = "350" style="opacity: 1.0"></li>
+				<li><img id = "bat2" class="bat" src="assets/img/bat2.png" width = "350" style="opacity: 0.0"></li>
+			</ul>
+		</div>
+	    <script>				
+			var start = performance.now();
+					
+			$(document).ready(function() {		
+				decrease();
+				setInterval('rotate()', 200);
+			});
+			
+			var bat1 = $("#bat1");			
+			var bat2 = $("#bat2");			
+			
+			function rotate() {			
+				if ((bat2.css({opacity: 0.0})) && (bat1.css({opacity: 1.0}))){				
+					setTimeout(function(){
+						bat2.css({opacity: 1.0});
+						bat1.css({opacity: 0.0});
+					}, 100)
+				}else{
+					setTimeout(function(){
+						bat2.css({opacity: 0.0});
+						bat1.css({opacity: 1.0});
+					}, 400)				
+				}				
+			}
+						
+			function decrease(time) {
+			var progress = time - start;
+			if (progress >= 0.01) {
+				//if (time >= 0.01) {
+					imgObj1 = document.getElementById('bat1');
+					imgObj2 = document.getElementById('bat2');
+					bat1.animate({height: 0, width: 0}, 2200);
+					bat2.animate({height: 0, width: 0}, 2200);
+					//imgObj1.height -= 1;					
+					//console.log(start);
+					//imgObj1.width -= 2;
+					//imgObj2.height -= 1;				
+					//imgObj2.width -= 2;					
+				}
+				requestAnimationFrame(decrease);  
+			}			
+	    </script>
+	</body>
+</html>

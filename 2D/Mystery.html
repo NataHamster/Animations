@@ -1,0 +1,162 @@
+<!doctype html> 
+<html>
+	<head>
+		<title>Mystery</title>
+		<meta charset="utf-8">
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.js"></script>		
+	</head>
+	<style>
+		
+		body	{
+		  background-color: rgb(67, 37, 107);
+		  overflow: hidden;
+		}	
+
+		#myCanvas
+		{
+		  height:400px;
+		  width:2400px;
+		  max-width:99%;
+		  min-width:800px;
+		  position:absolute;
+		  bottom:0;
+		  z-index:2;
+		}
+		
+		#house_dark{
+			position: absolute;
+			bottom: -10%;		
+			left: 25%; 
+			z-index:1;			
+		}
+		
+		#house_dark{
+			position: absolute;
+			bottom: -10%;		
+			left: 25%; 
+			z-index:1;			
+		}
+		
+		#house{
+			position: absolute;
+			bottom: -10%;		
+			left: 25%; 
+			z-index:0;			
+		}
+		
+		#ghost{
+			position: absolute;
+			bottom: -15%;		
+			left: 25%; 
+			z-index:3;
+			display: none;
+		}
+		
+		#hill{
+			position: relative;
+			bottom: 0%;		
+			z-index:0;
+			left: 40%; 
+		}
+		
+	</style>
+	<body>	
+		<canvas id="myCanvas" height="400" width="800"></canvas>
+       	<img id = "house_dark" src = "assets/img/house_dark.png" width="1000" >	
+        <img id = "house" src = "assets/img/house.png" width="1000" >		
+		<img id = "ghost" src = "assets/img/ghost.png" width="280" >
+		<script>			
+			var stTime = 0;
+			canvasWidth = 1600;
+			canvasHeight = 400;
+			pCount = 0;
+			pCollection = new Array();
+			var particlesPerPuff = 2000; //2000
+			var smokeImage = new Image();
+			smokeImage.src = "assets/img/smoke.png";
+
+			for (let i = 0; i < particlesPerPuff; i++) {
+				addNewParticle(i * 50);
+			   }
+
+			draw();
+
+			function addNewParticle(delay) {
+				var p = {};
+				p.top = canvasHeight;
+				p.left = randBetween(-200, 800);
+				p.start = new Date().getTime() + delay;
+				p.life = randBetween(0, 8000);
+				p.speedUp = randBetween(10, 40);
+				p.speedRight = randBetween(0, 20);
+				p.startOpacity = 0.3;
+				p.newTop = p.top;
+				p.newLeft = p.left;
+				p.size = 200;
+				p.growth = 10;
+				pCollection[pCount] = p;
+				pCount++;
+			}
+			
+			
+			function draw(time) {
+			  var c = document.getElementById("myCanvas");
+			  var ctx = c.getContext("2d");
+			  ctx.clearRect(0, 0, c.width, c.height);
+
+			  for (let i = 0; i < pCount; i++) {
+				var p = pCollection[i];
+				var td = new Date().getTime() - p.start;
+				var frac = td / p.life
+				var newTop = p.top - (p.speedUp * (td / 1000));
+				var newLeft = p.left + (p.speedRight * (td / 1000));
+				var newOpacity = Math.max(p.startOpacity * (1-frac),0);
+				var newSize = p.size + (p.growth * (td / 1000));
+
+				
+				
+				for (let i=0; i< particlesPerPuff; i++){
+					if (newTop <= 0) {
+						p.start = new Date().getTime()					
+					}
+				}			
+				ctx.fillStyle = 'rgba(150,150,150,' + newOpacity + ')';
+				ctx.globalAlpha = newOpacity;
+				ctx.drawImage(smokeImage, newLeft, newTop, newSize, newSize);
+			  }
+
+			  requestAnimationFrame(draw);
+			}
+
+			function randBetween(n1, n2) {
+			  var r = (Math.random() * (n2 - n1)) + n1;
+			  return r;
+			}	
+		</script>
+		<script>
+			var ghost = document.getElementById("ghost");
+			ghost.style.display = "none";
+			var t = setInterval(function appear(){			
+				if (ghost.style.display == "none"){
+				ghost.style.display = "block";		
+				setTimeout(function (){
+				ghost.style.display = "none";
+				}, 300)}		
+			}, 8000)
+			
+			var house_dark = document.getElementById("house_dark");
+			house_dark.style.zIndex = "1";
+			var house = document.getElementById("house");
+			house.style.zIndex = "0";
+			var t1 = setInterval(function light(){			
+				if (house_dark.style.zIndex == "1"){
+				house_dark.style.zIndex = "0";
+				house.style.zIndex = "1";
+				setTimeout(function (){
+				house_dark.style.zIndex = "1";
+				house.style.zIndex = "0";
+				}, 600)}		
+			}, 6000)		
+		</script>
+	</body>
+</html>

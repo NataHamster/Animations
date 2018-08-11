@@ -1,0 +1,128 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>HTML5 Canvas</title>
+	<style>
+	   canvas {
+		   border: 1px solid black;
+	   }
+	   
+	   #forest {
+			height: 384px;
+	   }
+	</style>
+	
+</head>
+<body>
+	<div id="forest" style="overflow: hidden">
+	   <canvas id="drawingCanvas" width="600" height="384" style="position:absolute; left: 8px; top: 8px"></canvas>
+	   <img src="assets/img/forest.png" style="position: relative; bottom: -150px">
+	</div>  
+<script>
+		var canvas = document.getElementById("drawingCanvas"),
+		context = canvas.getContext("2d");
+			
+		var	stars = [];		
+		var pos_y = canvas.height-30;
+		var r_top = 255;
+		var g_top = 0;
+		var b_top = 0;	
+		
+		var r_bottom = 0;
+		var g_bottom = 0;
+		var b_bottom = 98;
+		
+		var r_sun = 255;
+		var g_sun = 0;
+		var b_sun = 0;
+		const WIND = 0.7;
+		
+		const ST_COUNT = 200;
+		
+		context.lineWidth = 1.1;  
+		
+		window.onload = function() {
+			//changeColor1();	  
+			drawFrame()
+			setTimeout("changeColor()", 280);	  
+		}   
+		
+		for (let i=0; i < ST_COUNT; i++){
+		   stars.push({
+			   x: randomInt(1, canvas.width - 1),
+			   y: randomInt(0, canvas.height - 1),
+			   op: 1
+		   });
+		}
+		
+		function randomInt(min, max) {
+			return Math.floor(Math.random() * (max - min));
+		} 	
+			
+		function drawFrame(){	
+		
+			context.clearRect(0, 0, canvas.width, canvas.height);	
+			
+			var grd = context.createLinearGradient(0, 0, 0, 600);
+				grd.addColorStop(0, `rgb(${r_bottom}, ${g_bottom}, ${b_bottom}`);
+				grd.addColorStop(1, `rgb(${r_top}, ${g_top}, ${b_top}`);
+			context.fillStyle = grd;	
+			context.fillRect(0, 0, canvas.width, canvas.height);
+
+			 for (let i = 0; i < ST_COUNT; i++) {
+				snowflake(stars[i].x, stars[i].y);				
+				
+				function snowflake(squarePosition_x, squarePosition_y){
+				context.beginPath();
+				context.moveTo(squarePosition_x, squarePosition_y);
+				context.lineTo(squarePosition_x + context.lineWidth, squarePosition_y + context.lineWidth);	
+				context.strokeStyle = 'rgba(255,255,255,' + stars[i].op + ')';				
+				context.stroke(); 					
+				stars[i].op -= 0.002;			
+				}		
+			}		  	
+							
+			context.beginPath();				
+			context.arc(canvas.width/2, pos_y, 30, 0,Math.PI*2, true);
+			context.strokeStyle = `rgb(${r_sun}, ${g_sun}, ${b_sun}`;
+			context.fillStyle = `rgb(${r_sun}, ${g_sun}, ${b_sun})`;
+			context.fill();			
+			context.stroke();		
+            
+			 if (pos_y>40)
+			 pos_y-=1; 		 
+			 
+			setTimeout("drawFrame()", 190);	   
+		}
+				
+		
+		function star(squarePosition_x, squarePosition_y){
+							
+				context.beginPath();
+				context.strokeStyle = 'rgb(255,255,255)';	
+				context.moveTo(squarePosition_x, squarePosition_y);
+				context.lineTo(squarePosition_x + 0.5*context.lineWidth, squarePosition_y + 0.5*context.lineWidth);				
+				context.stroke(); 
+			}
+		
+		function changeColor(){
+			if(r_top<113) {r_top-=1;}
+			if(g_top<180) {g_top+=1;}
+			b_top+=1;	
+			
+			if (r_bottom < 45){
+				r_bottom+=1;
+				g_bottom+=2;}	
+			b_bottom+=2;
+			/*console.log(r_bottom);
+			console.log(g_bottom);
+			console.log(b_bottom);*/
+			
+			g_sun += 2;			
+					
+			setTimeout("changeColor()", 300);				
+		}
+	</script>    
+</body>
+</html>
