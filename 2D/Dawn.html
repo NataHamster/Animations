@@ -2,7 +2,7 @@
 <html>
 <head>
 	<meta charset="utf-8">
-	<title>HTML5 Canvas</title>
+	<title>Down</title>
 	<style>
 	   canvas {
 		   border: 1px solid black;
@@ -36,14 +36,13 @@
 		var r_sun = 255;
 		var g_sun = 0;
 		var b_sun = 0;
-		const WIND = 0.7;
 		
 		const ST_COUNT = 200;
+		const PART_SKY = 2*canvas.height/3;
 		
 		context.lineWidth = 1.1;  
 		
 		window.onload = function() {
-			//changeColor1();	  
 			drawFrame()
 			setTimeout("changeColor()", 280);	  
 		}   
@@ -51,7 +50,7 @@
 		for (let i=0; i < ST_COUNT; i++){
 		   stars.push({
 			   x: randomInt(1, canvas.width - 1),
-			   y: randomInt(0, canvas.height - 1),
+			   y: randomInt(0, PART_SKY),
 			   op: 1
 		   });
 		}
@@ -68,20 +67,20 @@
 				grd.addColorStop(0, `rgb(${r_bottom}, ${g_bottom}, ${b_bottom}`);
 				grd.addColorStop(1, `rgb(${r_top}, ${g_top}, ${b_top}`);
 			context.fillStyle = grd;	
-			context.fillRect(0, 0, canvas.width, canvas.height);
+			context.fillRect(0, 0, canvas.width, canvas.height);			
 
-			 for (let i = 0; i < ST_COUNT; i++) {
-				snowflake(stars[i].x, stars[i].y);				
-				
-				function snowflake(squarePosition_x, squarePosition_y){
+			for (let i = 0; i < ST_COUNT; i++) {
+				skyStars(stars[i]);				
+			}
+
+			function skyStars(star){
+				context.strokeStyle = 'rgba(255,255,255,' + star.op + ')';	
 				context.beginPath();
-				context.moveTo(squarePosition_x, squarePosition_y);
-				context.lineTo(squarePosition_x + context.lineWidth, squarePosition_y + context.lineWidth);	
-				context.strokeStyle = 'rgba(255,255,255,' + stars[i].op + ')';				
+				context.moveTo(star.x, star.y);
+				context.lineTo(star.x + context.lineWidth, star.y + context.lineWidth);								
 				context.stroke(); 					
-				stars[i].op -= 0.002;			
-				}		
-			}		  	
+				star.op -= (star.y < PART_SKY/2) ? 0.009 : 0.017;				
+			}			
 							
 			context.beginPath();				
 			context.arc(canvas.width/2, pos_y, 30, 0,Math.PI*2, true);
@@ -126,3 +125,4 @@
 	</script>    
 </body>
 </html>
+
