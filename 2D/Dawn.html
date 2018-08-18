@@ -95,16 +95,6 @@
 			setTimeout("drawFrame()", 190);	   
 		}
 				
-		
-		function star(squarePosition_x, squarePosition_y){
-							
-				context.beginPath();
-				context.strokeStyle = 'rgb(255,255,255)';	
-				context.moveTo(squarePosition_x, squarePosition_y);
-				context.lineTo(squarePosition_x + 0.5*context.lineWidth, squarePosition_y + 0.5*context.lineWidth);				
-				context.stroke(); 
-			}
-		
 		function changeColor(){
 			if(r_top<113) {r_top-=1;}
 			if(g_top<180) {g_top+=1;}
