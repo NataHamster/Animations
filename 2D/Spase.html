@@ -37,13 +37,6 @@
 			.meteor:nth-child(3) {transform: rotate(-80deg); top: 250px; left: 590px; animation: meteor3 13s linear infinite;}
 			.meteor:nth-child(4) {transform: rotate(-20deg); top: 500px; left: 600px; animation: meteor4 9s linear infinite;}
 
-			/*@-webkit-keyframes meteor {
-				0% {margin-top: -300px; margin-right: -300px; opacity: 1}
-				8% {opacity: 0}
-				10% {margin-top: 300px; margin-left: -600px; opacity: 0}
-				100% {opacity: 0}
-			}*/
-
 			@-webkit-keyframes meteor1 {
 				0% {margin-top: -300px; margin-right: -300px; opacity: 1}
 				8% {opacity: 0.7}
@@ -106,20 +99,19 @@
 			window.onload = main;
 		</script>
 		<script>
-			const ST_COUNT = 1000;
-			const WIND = 0.7;
+			const S_CONT = 1000;
 			var r = 255;
 			var g = 255;
-			var b = 200;
+			var b = 250;
 
 			var canvas = document.getElementById("drawingCanvas"),
 				context = canvas.getContext("2d"), 		
-				sfArr = []; 	
+				sArr = []; 	
 
-			context.lineWidth = 1;  
+			context.lineWidth = 0.9;  
 
-			for(let i = 0; i < ST_COUNT; i++) {
-			  sfArr.push({
+			for(let i = 0; i < S_CONT; i++) {
+			  sArr.push({
 				x: randomInt(0, canvas.width),
 				y: randomInt(0, canvas.height),
 				op: Math.random(),
@@ -127,27 +119,27 @@
 			  });
 			}
 
-			let intrvl = setInterval(() => {
+			var t = setInterval(() => {
 				context.clearRect(0, 0, canvas.width, canvas.height);
-				for (let i = 0; i < ST_COUNT; i++) {			
-					if (sfArr[i].op < 0.1 || sfArr[i].op > 0.9) {
-					    sfArr[i].delta_opacity = -sfArr[i].delta_opacity;	  
+				for (let i = 0; i < S_CONT; i++) {			
+					if (sArr[i].op < 0.1 || sArr[i].op > 0.9) {
+					    sArr[i].delta_opacity = -sArr[i].delta_opacity;	  
 					}
-					sfArr[i].op += sfArr[i].delta_opacity;				
-					context.strokeStyle = 'rgba(' + r + ',' + g + ',' + b + ', ' + sfArr[i].op + ')';
-					star(sfArr[i].x, sfArr[i].y, sfArr[i].op);		
+					sArr[i].op += sArr[i].delta_opacity;				
+					context.strokeStyle = 'rgba(' + r + ',' + g + ',' + b + ', ' + sArr[i].op + ')';
+					skyStars(sArr[i].x, sArr[i].y, sArr[i].op);		
 				}
 			}, 200);
 
-			function randomInt(min, max) {
-				return Math.floor(Math.random() * (max - min)) + min;
-			}
-
-			function star(squarePosition_x, squarePosition_y){
+			function skyStars(pos_x, pos_y){
 				context.beginPath();
-				context.moveTo(squarePosition_x, squarePosition_y);
-				context.lineTo(squarePosition_x + 0.5*context.lineWidth, squarePosition_y + 0.5*context.lineWidth);
+				context.moveTo(pos_x, pos_y);
+				context.lineTo(pos_x + 0.5*context.lineWidth, pos_y + 0.5*context.lineWidth);
 				context.stroke(); 
+			}
+			
+			function randomInt(min, max) {
+				return Math.floor(Math.random() * (max - min));
 			}
 		</script>
 	</body>
